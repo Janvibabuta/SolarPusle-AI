@@ -4,7 +4,6 @@ import requests
 from tensorflow.keras.models import load_model
 
 # 🔥 NEW IMPORTS
-from supabase import create_client
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 import io
@@ -19,11 +18,6 @@ app.secret_key = "secret123"
 
 model = load_model("model.h5", compile=False, safe_mode=False)
 
-# 🔥 SUPABASE CONFIG
-SUPABASE_URL = "https://sfkuetbqdippjiseugnd.supabase.co"
-SUPABASE_KEY = "sb_publishable_8PVEkcRzGKYetSdOSbXSkw_5H0JHAyO"
-
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 # ✅ HOME (UPDATED SLIGHTLY - SAFE)
@@ -67,24 +61,6 @@ def predict():
 
     user_id = request.form.get("user_id", "anonymous")
     print("👤 USER ID:", user_id)
-
-    try:
-        response = supabase.table("solar_data").insert({
-            "user_id": user_id,
-            "temp": features[0],
-            "humidity": features[1],
-            "pressure": features[2],
-            "zenith": features[3],
-            "cloud": features[4],
-            "wind": features[5],
-            "radiation": features[6],
-            "prediction": prediction
-        }).execute()
-
-        print("✅ INSERT RESPONSE:", response)
-
-    except Exception as e:
-        print("❌ INSERT ERROR:", e)
 
     # forecast
     hours = list(range(6, 18))
